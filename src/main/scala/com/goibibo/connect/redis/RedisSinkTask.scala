@@ -29,26 +29,32 @@ class RedisSinkTask extends SinkTask {
     }
 
     override def put(records: util.Collection[SinkRecord]): Unit = {
-        lazy implicit val formats = new DefaultFormats {
-            override def dateFormatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss")
+        lazy implicit val formats: DefaultFormats = new DefaultFormats {
+            override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         }
         val persuasionOutputs = records.asScala.toList.map { p =>
             parse(p.value().toString).extract[PersuasionOutput]
         }
-        println()
         val pipeline: Pipeline = jedis.pipelined()
+        val currentEpoch = System.currentTimeMillis() / 1000
         persuasionOutputs.foreach { p =>
-            //Minute level data needs to be expired in 2 hours
+            val eventTime = p.startTime
+            // Minute level data needs to be expired in 2 hours
             pipeline.incrBy(p.key, p.value)
-            pipeline.expire(p.key, 7200)
+            val ttlMinutes = eventTime.getTime/1000 + 7200 - currentEpoch
+            pipeline.expire(p.key, ttlMinutes.toInt)
 
+            eventTime.setMinutes(0)
             // Hours level data needs to be expired in 2 days
             pipeline.incrBy(p.key.dropRight(2), p.value)
-            pipeline.expire(p.key.dropRight(2), 172800)
+            val ttlHours = eventTime.getTime/1000 + 172800 - currentEpoch
+            pipeline.expire(p.key.dropRight(2), ttlHours.toInt)
 
-            // Hours level data needs to be expired in 2 months
+            eventTime.setHours(0)
+            // Days level data needs to be expired in 2 months
             pipeline.incrBy(p.key.dropRight(4), p.value)
-            pipeline.expire(p.key.dropRight(4), 5184000)
+            val ttlDays = eventTime.getTime/1000 + 5184000 - currentEpoch
+            pipeline.expire(p.key.dropRight(4), ttlDays.toInt)
         }
         pipeline.sync()
     }

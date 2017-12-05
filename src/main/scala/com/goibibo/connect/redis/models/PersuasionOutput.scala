@@ -1,6 +1,6 @@
 package com.goibibo.connect.redis.models
 
-import java.sql.Timestamp
+import java.util.Date
 
 /**
   * Project: redis-connect
@@ -10,6 +10,6 @@ import java.sql.Timestamp
 case class PersuasionOutput(
                                    key: String,
                                    value: Long,
-                                   startTime: Timestamp,
-                                   endTime: Timestamp
+                                   startTime: Date,
+                                   endTime: Date
                            )
