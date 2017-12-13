@@ -15,7 +15,7 @@ object Util {
     def addToPipeline(pipeline:Pipeline, output: PersuasionOutput): Unit = {
         output.command match {
             case "incrBy" => pipeline.incrBy(output.key, output.value.toLong)
-            case "expireAt" => pipeline.incrBy(output.key, output.value.toLong)
+            case "expireAt" => pipeline.expireAt(output.key, output.value.toLong)
             case _ => logger.info(s"No command matches. Command: ${output.command}")
         }
     }
