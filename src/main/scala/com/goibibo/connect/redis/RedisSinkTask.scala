@@ -38,23 +38,7 @@ class RedisSinkTask extends SinkTask {
         val pipeline: Pipeline = jedis.pipelined()
         val currentEpoch = System.currentTimeMillis() / 1000
         persuasionOutputs.foreach { p =>
-            val eventTime = p.startTime
-            // Minute level data needs to be expired in 2 hours
-            pipeline.incrBy(p.key, p.value)
-            val ttlMinutes = eventTime.getTime/1000 + 7200 - currentEpoch
-            pipeline.expire(p.key, ttlMinutes.toInt)
-
-            eventTime.setMinutes(0)
-            // Hours level data needs to be expired in 2 days
-            pipeline.incrBy(p.key.dropRight(2), p.value)
-            val ttlHours = eventTime.getTime/1000 + 172800 - currentEpoch
-            pipeline.expire(p.key.dropRight(2), ttlHours.toInt)
-
-            eventTime.setHours(0)
-            // Days level data needs to be expired in 2 months
-            pipeline.incrBy(p.key.dropRight(4), p.value)
-            val ttlDays = eventTime.getTime/1000 + 5184000 - currentEpoch
-            pipeline.expire(p.key.dropRight(4), ttlDays.toInt)
+           Util.addToPipeline(pipeline, p)
         }
         pipeline.sync()
     }

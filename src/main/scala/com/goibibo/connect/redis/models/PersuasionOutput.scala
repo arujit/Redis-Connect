@@ -1,7 +1,5 @@
 package com.goibibo.connect.redis.models
 
-import java.util.Date
-
 /**
   * Project: redis-connect
   * Author: shivamsharma
@@ -9,7 +7,6 @@ import java.util.Date
   */
 case class PersuasionOutput(
                                    key: String,
-                                   value: Long,
-                                   startTime: Date,
-                                   endTime: Date
+                                   command: String,
+                                   value: String
                            )
