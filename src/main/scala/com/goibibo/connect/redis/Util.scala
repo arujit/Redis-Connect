@@ -17,6 +17,7 @@ object Util {
             case "incrBy" => pipeline.incrBy(output.key, output.value.toLong)
             case "expireAt" => pipeline.expireAt(output.key, output.value.toLong)
             case "lpush" => pipeline.lpush(output.key, output.value)
+            case "set" => pipeline.set(output.key, output.value)
             case _ => logger.info(s"No command matches. Command: ${output.command}")
         }
     }
