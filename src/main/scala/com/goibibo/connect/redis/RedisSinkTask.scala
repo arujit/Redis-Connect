@@ -42,8 +42,9 @@ class RedisSinkTask extends SinkTask {
                 Util.addToPipeline(pipeline, p)
             }
             pipeline.sync()
-        } finally {
-            System.exit(1)
+        } catch {
+            case e: Exception =>
+                System.exit(1)
         }
     }
 
