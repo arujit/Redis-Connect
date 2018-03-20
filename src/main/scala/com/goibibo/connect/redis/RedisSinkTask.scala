@@ -35,12 +35,16 @@ class RedisSinkTask extends SinkTask {
         val persuasionOutputs = records.asScala.toList.map { p =>
             parse(p.value().toString).extract[PersuasionOutput]
         }
-        val pipeline: Pipeline = jedis.pipelined()
-        val currentEpoch = System.currentTimeMillis() / 1000
-        persuasionOutputs.foreach { p =>
-           Util.addToPipeline(pipeline, p)
+        try {
+            val pipeline: Pipeline = jedis.pipelined()
+            val currentEpoch = System.currentTimeMillis() / 1000
+            persuasionOutputs.foreach { p: PersuasionOutput =>
+                Util.addToPipeline(pipeline, p)
+            }
+            pipeline.sync()
+        } finally {
+            System.exit(1)
         }
-        pipeline.sync()
     }
 
     override def stop(): Unit = {
