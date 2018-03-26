@@ -9,6 +9,7 @@ import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.connect.sink.{SinkRecord, SinkTask}
 import org.json4s.jackson.JsonMethods._
 import org.json4s.{DefaultFormats, _}
+import org.slf4j.{Logger, LoggerFactory}
 import redis.clients.jedis.{Jedis, Pipeline}
 
 import scala.collection.JavaConverters._
@@ -21,6 +22,7 @@ import scala.collection.JavaConverters._
 class RedisSinkTask extends SinkTask {
     private var config: RedisSinkConfig = _
     private var jedis: Jedis = _
+    private var logger: Logger = LoggerFactory.getLogger(RedisSinkConfig.getClass)
 
     override def start(props: util.Map[String, String]): Unit = {
         config = RedisSinkConfig(props.asScala.toMap)
@@ -44,6 +46,7 @@ class RedisSinkTask extends SinkTask {
             pipeline.sync()
         } catch {
             case e: Exception =>
+                logger.error("Exception occurred in Redis Connect... Exiting the application", e)
                 System.exit(1)
         }
     }
