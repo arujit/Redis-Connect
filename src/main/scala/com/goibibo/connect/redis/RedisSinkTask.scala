@@ -3,7 +3,7 @@ package com.goibibo.connect.redis
 import java.text.SimpleDateFormat
 import java.util
 
-import com.goibibo.connect.redis.models.PersuasionOutput
+import com.goibibo.connect.redis.models.SinkInput
 import com.newrelic.api.agent.{NewRelic, Trace}
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
@@ -37,11 +37,11 @@ class RedisSinkTask extends SinkTask {
             override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         }
         val persuasionOutputs = records.asScala.toList.map { p =>
-            parse(p.value().toString).extract[PersuasionOutput]
+            parse(p.value().toString).extract[SinkInput]
         }
         try {
             val pipeline: Pipeline = jedis.pipelined()
-            persuasionOutputs.foreach { p: PersuasionOutput =>
+            persuasionOutputs.foreach { p: SinkInput =>
                 Util.addToPipeline(pipeline, p)
             }
             pipeline.sync()

@@ -1,6 +1,6 @@
 package com.goibibo.connect.redis
 
-import com.goibibo.connect.redis.models.PersuasionOutput
+import com.goibibo.connect.redis.models.SinkInput
 import org.slf4j.{Logger, LoggerFactory}
 import redis.clients.jedis.Pipeline
 
@@ -12,7 +12,7 @@ import redis.clients.jedis.Pipeline
 object Util {
     private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-    def addToPipeline(pipeline : Pipeline, output : PersuasionOutput): Unit = {
+    def addToPipeline(pipeline : Pipeline, output : SinkInput): Unit = {
         output.command match {
             case "incrBy" => pipeline.incrBy(output.key, output.value.toLong)
             case "expireAt" => pipeline.expireAt(output.key, output.value.toLong)

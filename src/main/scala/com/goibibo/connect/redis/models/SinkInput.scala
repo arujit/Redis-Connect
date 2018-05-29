@@ -5,7 +5,7 @@ package com.goibibo.connect.redis.models
   * Author: shivamsharma
   * Date: 12/2/17.
   */
-case class PersuasionOutput(
+case class SinkInput(
                                    key: String,
                                    command: String,
                                    value: String
