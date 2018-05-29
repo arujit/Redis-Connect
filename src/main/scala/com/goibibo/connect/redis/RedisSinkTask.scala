@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util
 
 import com.goibibo.connect.redis.models.PersuasionOutput
+import com.newrelic.api.agent.NewRelic
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.connect.sink.{SinkRecord, SinkTask}
@@ -39,11 +40,11 @@ class RedisSinkTask extends SinkTask {
         }
         try {
             val pipeline: Pipeline = jedis.pipelined()
-            val currentEpoch = System.currentTimeMillis() / 1000
             persuasionOutputs.foreach { p: PersuasionOutput =>
                 Util.addToPipeline(pipeline, p)
             }
             pipeline.sync()
+          NewRelic.incrementCounter("Custom/RedisConnect-Input")
         } catch {
             case e: Exception =>
                 logger.error("Exception occurred in Redis Connect... Exiting the application", e)
