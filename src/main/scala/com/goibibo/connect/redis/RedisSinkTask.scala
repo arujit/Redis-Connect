@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util
 
 import com.goibibo.connect.redis.models.PersuasionOutput
-import com.newrelic.api.agent.NewRelic
+import com.newrelic.api.agent.{NewRelic, Trace}
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.connect.sink.{SinkRecord, SinkTask}
@@ -31,6 +31,7 @@ class RedisSinkTask extends SinkTask {
         jedis.select(config.redisDatabase)
     }
 
+    @Trace(dispatcher = true)
     override def put(records: util.Collection[SinkRecord]): Unit = {
         lazy implicit val formats: DefaultFormats = new DefaultFormats {
             override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -44,7 +45,7 @@ class RedisSinkTask extends SinkTask {
                 Util.addToPipeline(pipeline, p)
             }
             pipeline.sync()
-          NewRelic.incrementCounter("Custom/RedisConnect-Input")
+            NewRelic.recordMetric("Custom/RedisConnect-CountsPerSync", persuasionOutputs.size)
         } catch {
             case e: Exception =>
                 logger.error("Exception occurred in Redis Connect... Exiting the application", e)
