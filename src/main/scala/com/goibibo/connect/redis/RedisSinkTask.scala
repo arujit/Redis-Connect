@@ -45,7 +45,7 @@ class RedisSinkTask extends SinkTask {
                 Util.addToPipeline(pipeline, p)
             }
             pipeline.sync()
-            NewRelic.recordMetric("Custom/RedisConnect-CountsPerSync", persuasionOutputs.size)
+            NewRelic.incrementCounter("Custom/RedisConnect-CountsPerSync", persuasionOutputs.size)
         } catch {
             case e: Exception =>
                 logger.error("Exception occurred in Redis Connect... Exiting the application", e)
