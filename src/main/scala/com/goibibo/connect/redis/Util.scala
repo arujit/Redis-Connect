@@ -12,7 +12,7 @@ import redis.clients.jedis.Pipeline
 object Util {
     private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-    def addToPipeline(pipeline:Pipeline, output: PersuasionOutput): Unit = {
+    def addToPipeline(pipeline : Pipeline, output : PersuasionOutput): Unit = {
         output.command match {
             case "incrBy" => pipeline.incrBy(output.key, output.value.toLong)
             case "expireAt" => pipeline.expireAt(output.key, output.value.toLong)
