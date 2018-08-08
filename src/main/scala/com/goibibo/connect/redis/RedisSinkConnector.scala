@@ -25,7 +25,9 @@ class RedisSinkConnector extends SinkConnector {
             newValue
         }
         val properties = props.asScala.toMap
-        val newProperties = properties.mapValues{value => if(value.startsWith("${") && value.endsWith("}")) apply(value) else value}
+        val newProperties = {
+            properties.mapValues { value => if (value.startsWith("${") && value.endsWith("}")) apply(value) else value }
+        }
         this.props = newProperties
     }
 
