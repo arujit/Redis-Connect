@@ -12,3 +12,5 @@ libraryDependencies ++= Seq(
     "org.json4s" %% "json4s-jackson" % "3.5.2",
     "com.newrelic.agent.java" % "newrelic-api" % "3.33.0"
 )
+
+assemblyOutputPath in assembly := baseDirectory.value / "distribution" / s"${name.value}-assembly-${version.value}.jar"
