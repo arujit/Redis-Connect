@@ -21,7 +21,7 @@ ENV KAFKA_HOME /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 ENV PATH $PATH:$JAVA_HOME/bin $PATH:$KAFKA_HOME/bin
 
 RUN mkdir /logs/
-WORKDIR /usr/local/goibibo/source/kafka-connect-dynamodb
+WORKDIR /usr/local/goibibo/source/Redis-Connect
 
 RUN wget -N https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip && \
         unzip newrelic-java.zip

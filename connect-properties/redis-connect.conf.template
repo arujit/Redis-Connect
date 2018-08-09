@@ -1,5 +1,5 @@
-name=redis-connect-flight
+name=${RC_NAME}
 connector.class=com.goibibo.connect.redis.RedisSinkConnector
-topics=PersuasionFlightRedisOutput
-redis.host=persuasion-dp.vcbrj0.ng.0001.aps1.cache.amazonaws.com
-redis.database=15
+topics=${RC_TOPIC}
+redis.host=${REDIS_HOST}
+redis.database=${REDIS_DB}
