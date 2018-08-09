@@ -17,18 +17,14 @@ class RedisSinkConnector extends SinkConnector {
     var props: Map[String, String] = _
 
     override def start(props: util.Map[String, String]): Unit = {
-        def apply(property: String): String = {
-            val newVariable = property.replace("${","").replace("}","")
-            val envVariables = sys.env.get(newVariable)
-            val sysProperties = sys.props.get(newVariable)
-            val newValue = envVariables.getOrElse(sysProperties.getOrElse(property))
-            newValue
-        }
-        val properties = props.asScala.toMap
-        val newProperties = {
-            properties.mapValues { value => if (value.startsWith("${") && value.endsWith("}")) apply(value) else value }
-        }
-        this.props = newProperties
+        this.props = props.asScala.mapValues { value =>
+                if(value.startsWith("${") && value.endsWith("}")) {
+                    val newVariable = value.replace("${", "").replace("}", "")
+                    val envVariables: Option[String] = sys.env.get(newVariable)
+                    val sysProperties: Option[String] = sys.props.get(newVariable)
+                    envVariables.getOrElse(sysProperties.getOrElse(value))
+                } else value
+        }.toMap
     }
 
     override def taskClass(): Class[RedisSinkTask] = classOf[RedisSinkTask]
